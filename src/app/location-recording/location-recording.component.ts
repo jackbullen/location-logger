@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
+import {take} from 'rxjs/operators';
 import { GeolocationService } from '@ng-web-apis/geolocation';
 import { LocationData } from '../models/location-data.model';
+
 @Component({
   selector: 'app-location-recording',
   templateUrl: './location-recording.component.html',
@@ -13,25 +15,37 @@ export class LocationRecordingComponent {
   constructor(private readonly geolocation$: GeolocationService) {}
 
   recordLocation() {
-    this.geolocation$.subscribe(position => 
+    this.geolocation$
+      .pipe(take(1))
+      .subscribe(position => 
         this.saveLocation(position.coords.latitude, position.coords.longitude));
   }
   
   saveLocation(latitude: number, longitude: number) {
     console.log(`Saving location: ${latitude}, ${longitude}`);
+
+    if (!confirm(`Is this the correct annotation: ${this.annotation}?`)) {
+      return;
+    }
+
     if (latitude !== null && longitude !== null) {
       const locationData: LocationData = {
         latitude: latitude,
         longitude: longitude,
         annotation: this.annotation,
       };
-      console.log('locationData');
+
       const savedLocationsJSON: string | null = localStorage.getItem('locations');
       const savedLocations: LocationData[] = (savedLocationsJSON) ? JSON.parse(savedLocationsJSON) : [];
+
+      if (savedLocations.some(loc => loc.annotation === this.annotation)) {
+        console.error('Error saving location, annotation already exists.');
+        return;
+      }
+
       savedLocations.push(locationData);
       this.savedLocations = savedLocations;
       localStorage.setItem('locations', JSON.stringify(savedLocations));
-
     } else {
       console.error('Error retrieving location, cannot save.');
     }
