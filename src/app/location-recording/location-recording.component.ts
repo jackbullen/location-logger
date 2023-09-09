@@ -70,4 +70,11 @@ export class LocationRecordingComponent {
     window.URL.revokeObjectURL(url);
   }
 
+  clearLocations() {
+    if (confirm('Are you sure you want to clear all locations?')) {
+      localStorage.removeItem('locations');
+      this.savedLocations = [];
+    }
+  }
+
 }
