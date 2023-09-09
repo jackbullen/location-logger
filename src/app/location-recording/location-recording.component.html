@@ -1,0 +1,25 @@
+<div class="container">
+  <h2>Record Location</h2>
+
+  <label for="annotation">Enter Text:</label>
+  <input 
+    type="text" 
+    id="annotation" 
+    [(ngModel)]="annotation" 
+    placeholder="Enter building name and room number."
+  />
+
+  <button class="button" (click)="recordLocation()">Record Location</button>
+
+  <ul *ngIf="savedLocations.length > 0">
+    <li *ngFor="let annotation of savedLocations">
+      <strong>Latitude: {{ annotation.latitude }}</strong>
+      <strong>Longitude: {{ annotation.longitude }}</strong>
+      <strong>Annotation: {{ annotation.annotation }}</strong>
+    </li>
+  </ul>
+
+
+  <button class="button" (click)="exportLocations()">Export Location Data</button>
+
+</div>
